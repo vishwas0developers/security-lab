@@ -1,0 +1,39 @@
+# Build output
+dist/
+
+# Dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Local/machine-specific config and secrets
+config/local.yaml
+config/*.local.yaml
+config/runtime.yaml
+**/.security/credentials.yaml
+*.env
+.env*
+!.env.example
+
+# Generated at runtime (per §7/§39 of the PRD — centralized, not committed)
+projects/registry.json
+reports/
+evidence/
+findings/data/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/

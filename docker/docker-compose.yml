@@ -1,0 +1,95 @@
+# Docker Compose runtime for the platform's security tools (PRD §29, §11 /
+# implementation_plan.md §7). Specialized services, not one monolithic image.
+#
+# Verified against each project's current official distribution before being
+# wired in here (see docs/DOCKER.md for sources and dates checked):
+#   - ZAP:   zaproxy/zap-stable (official, zaproxy.org/docs/docker)
+#   - Nuclei: projectdiscovery/nuclei (official, ProjectDiscovery)
+#   - MobSF: opensecurity/mobile-security-framework-mobsf (official, hub.docker.com)
+#   - Strix: NOT a compose service. It is a standalone CLI
+#     (`curl -sSL https://strix.ai/install | bash`) that manages its own
+#     Docker sandbox internally and requires a user-supplied LLM API key
+#     (OpenAI/Anthropic/etc). The orchestrator invokes it as a subprocess
+#     when `strix` is found on PATH and STRIX_LLM/LLM_API_KEY are set; it is
+#     intentionally absent from this file. See docs/DOCKER.md.
+#
+# Networking: a dedicated bridge network (not `internal: true` -- ZAP/Nuclei
+# need outbound reachability to whatever target the user has authorized,
+# which is frequently on the host itself via host.docker.internal). No
+# service publishes a port to 0.0.0.0; anything the host-side orchestrator
+# needs to reach is bound to 127.0.0.1 only, per "do not expose
+# administration interfaces publicly by default".
+
+networks:
+  security-platform:
+    driver: bridge
+
+volumes:
+  zap-data: {}
+  mobsf-data: {}
+  nuclei-templates: {}
+
+services:
+  zap:
+    image: zaproxy/zap-stable:${ZAP_VERSION:-latest}
+    container_name: security-platform-zap
+    networks: [security-platform]
+    volumes:
+      - zap-data:/zap/wrk
+    # ZAP's API. Bound to loopback only so the host-side orchestrator can
+    # reach it but nothing on the LAN/internet can.
+    ports:
+      - "127.0.0.1:${ZAP_API_PORT:-8090}:8080"
+    environment:
+      ZAP_API_KEY: ${ZAP_API_KEY:?set a ZAP_API_KEY in docker/.env}
+    command: >
+      zap.sh -daemon -host 0.0.0.0 -port 8080
+      -config api.key=${ZAP_API_KEY:?set a ZAP_API_KEY in docker/.env}
+      -config api.addrs.addr.name=.*
+      -config api.addrs.addr.regex=true
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS \"http://localhost:8080/JSON/core/view/version/?apikey=$$ZAP_API_KEY\""]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  mobsf:
+    image: opensecurity/mobile-security-framework-mobsf:${MOBSF_VERSION:-latest}
+    container_name: security-platform-mobsf
+    networks: [security-platform]
+    volumes:
+      - mobsf-data:/root/.MobSF
+    ports:
+      - "127.0.0.1:${MOBSF_PORT:-8000}:8000"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 3g
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  # One-shot CLI image, not a long-running daemon -- invoked per scan via
+  # `docker compose run --rm nuclei -u <target> ...` (or, more commonly,
+  # `docker run --rm ... projectdiscovery/nuclei ...` directly, which is
+  # what src/tools/nuclei.ts actually does; this entry exists so `docker
+  # compose pull`/`security doctor` can verify the image is present).
+  nuclei:
+    image: projectdiscovery/nuclei:${NUCLEI_VERSION:-latest}
+    container_name: security-platform-nuclei
+    networks: [security-platform]
+    volumes:
+      - nuclei-templates:/root/nuclei-templates
+    profiles: ["tools"]
+    entrypoint: ["nuclei"]
+    command: ["-version"]

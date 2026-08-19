@@ -1,0 +1,18 @@
+# Written to <project>/.security/scope.yaml by `security setup` (PRD §21).
+# Defaults are deliberately restrictive: production is protected, and no
+# targets are authorized until explicitly listed here.
+schemaVersion: 1
+environment: "staging"
+allowedDomains: []
+allowedIpRanges: []
+allowedUrls: []
+allowedRepositories: []
+allowedApplications: []
+allowedMobileArtifacts: []
+excludedHosts: []
+excludedPaths: []
+authenticationProfiles: []
+rateLimits:
+  requestsPerSecond: 5
+maxScanDurationMinutes: 60
+destructiveActionsAllowed: false

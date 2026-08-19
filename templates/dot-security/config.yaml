@@ -1,0 +1,17 @@
+# Written to <project>/.security/config.yaml by `security setup` (PRD §8, §9).
+# This is a template — placeholders are filled in during project setup.
+schemaVersion: 1
+name: "{{PROJECT_NAME}}"
+detected:
+  laravel: false
+  php: false
+  node: false
+  api: false
+  openapi: false
+  docker: false
+  android: false
+  windows: false
+  webview: false
+profiles: []
+mcp:
+  registered: false
