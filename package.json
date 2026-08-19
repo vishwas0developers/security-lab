@@ -1,6 +1,6 @@
 {
   "name": "security-platform",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Centralized, reusable AI-agent-driven security assessment platform (CLI + MCP + orchestrator + skills)",
   "bin": {
     "security": "dist/cli/index.js"
