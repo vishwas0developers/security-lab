@@ -24,7 +24,7 @@ config/runtime.yaml
 .env*
 !.env.example
 
-# Generated at runtime (per §7/§39 of the PRD — centralized, not committed)
+# Generated at runtime (per Â§7/Â§39 of the PRD â€” centralized, not committed)
 projects/registry.json
 reports/
 evidence/
@@ -39,3 +39,17 @@ Thumbs.db
 .idea/
 *.tgz
 graphify-out/
+
+# --- secrets (security rollout) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+**/credentials.json
+**/client_secret*.json
+**/service_account*.json
+**/creds.json
