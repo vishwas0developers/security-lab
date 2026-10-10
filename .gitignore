@@ -1,3 +1,7 @@
+# Generated at runtime (per §7/§39 of the PRD — centralized, not committed)
+
+
+
 # Build output
 dist/
 
@@ -22,7 +26,6 @@ config/runtime.yaml
 **/.security/credentials.yaml
 *.env
 .env*
-!.env.example
 
 # Generated at runtime (per Â§7/Â§39 of the PRD â€” centralized, not committed)
 projects/registry.json
@@ -41,13 +44,6 @@ Thumbs.db
 graphify-out/
 
 # --- secrets (security rollout) ---
-.env
-.env.*
-!.env.example
-*.pem
-*.key
-*.p12
-*.pfx
 id_rsa*
 **/credentials.json
 **/client_secret*.json
@@ -56,25 +52,29 @@ id_rsa*
 
 
 # Private credential files (ordinary source and databases remain eligible)
-.env
-.env.*
 !.env.example
 !.env.*.example
+
+# SQLite databases stay local; never publish database files or journals.
+
+# Security protections: private credentials and SQLite stay outside Git.
+.env
+.env.*
 .ocr_key
 .fernet_key
 .encryption_key
 id_rsa
 id_ed25519
+*.pem
+*.key
 *.p12
 *.pfx
 *.ppk
+credentials.json
 service-account*.json
 *_credentials.json
-credentials.json
 cookies.json
 cookies_*.json
-
-# SQLite databases stay local; never publish database files or journals.
 *.sqlite
 *.sqlite3
 *.db
