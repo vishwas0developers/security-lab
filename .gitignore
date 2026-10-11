@@ -83,3 +83,92 @@ cookies_*.json
 *.sqlite3-*
 *.db-*
 *.db3-*
+# Build output
+dist/
+
+# Dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Local/machine-specific config and secrets
+config/local.yaml
+config/*.local.yaml
+config/runtime.yaml
+**/.security/credentials.yaml
+*.env
+.env*
+!.env.example
+
+# Generated at runtime (per Â§7/Â§39 of the PRD â€” centralized, not committed)
+projects/registry.json
+reports/
+evidence/
+findings/data/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.tgz
+graphify-out/
+
+# --- secrets (security rollout) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+**/credentials.json
+**/client_secret*.json
+**/service_account*.json
+**/creds.json
+
+
+# Private credential files (ordinary source and databases remain eligible)
+.env
+.env.*
+!.env.example
+!.env.*.example
+.ocr_key
+.fernet_key
+.encryption_key
+id_rsa
+id_ed25519
+*.p12
+*.pfx
+*.ppk
+service-account*.json
+*_credentials.json
+credentials.json
+cookies.json
+cookies_*.json
+
+# SQLite databases stay local; never publish database files or journals.
+*.sqlite
+*.sqlite3
+*.db
+*.db3
+*.sqlite-*
+*.sqlite3-*
+*.db-*
+*.db3-*
+
+# Additional protection for previously ignored paths.
+.env.*
+.env*
